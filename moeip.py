@@ -23,7 +23,7 @@ class IP(object):
             else:                            # "192.168.0.1","255.255.255.0"
                 self.addr = adress
                 self.cidr = str(self.comp_mask_to_cidr(mask))             
-            if not self.testipv4():
+            if not self.testipv4():          # Test nicht bestanden
                 self.addr=""
                 self.cidr=""
                 self.version = self.Version.error
@@ -38,7 +38,7 @@ class IP(object):
     def testipv4(self):
 
         self.error = ""
-        if self.addr.count('.') != 3:
+        if self.addr.count('.') != 3: # 4 Oktetts
             self.error += "Fehler im Addressbereich (falsche Anzahl '.'.)\n"
         else:
             add_cut = self.addr.split('.')
@@ -46,7 +46,7 @@ class IP(object):
                 if  not addr.isdigit() or int(addr) < 0 or int(addr) > 255:
                     self.error += f"Fehler im {counter+1}. Oktett.\n"
         if  not self.cidr.isdigit() or int(self.cidr) < 0 or int(self.cidr) > 32:
-            self.error += f"Fehler in der CIDR.\n"
+            self.error += "Fehler in der CIDR.\n"
         return True if len(self.error)==0 else False
     
     def get_int(self):
@@ -58,8 +58,18 @@ class IP(object):
             return number
         else:
             return -1
+        
+    def get_nid(self):
+        # calc the net-id
+        addr_lst = self.addr.split('.')
+        mask_lst = self.get_mask().split('.')
+        test = int(addr_lst[0]).to_bytes()
+        mask = int(mask_lst[0]).to_bytes()
+        test2 = test & mask
+        print(test2)
     
     def get_mask(self):
+        # return mask as string
         number = int(self.cidr)
         mask = ""
         for i in range(3):
@@ -73,7 +83,8 @@ class IP(object):
         mask += str([0, 128, 192, 224, 240, 248, 252, 254, 255][number])
         return mask
 
-    def comp_addr(self, number):
+    def calc_addr(self, number):
+        # calc a address from int to string
         add = ""
         for i in range(3):
             add = "."+str(number % 256) + add
@@ -81,7 +92,8 @@ class IP(object):
         add = str(number)+add
         return add
 
-    def comp_mask_to_cidr(self,mask):
+    def calc_mask_to_cidr(self,mask):
+        # calc a string mask from a cdir
         mask_split = mask.split('.')
         cidr = 0
         for i in range(3):
@@ -93,6 +105,6 @@ class IP(object):
         return str(number2)
 
 if __name__== '__main__':
-    ip1 = IP('192.244.23.1/11')
+    ip1 = IP('255.244.23.1/11')
     print(ip1,ip1.get_int())
-    print(ip1.get_mask())
+    print(ip1.get_nid())
