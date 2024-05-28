@@ -49,7 +49,7 @@ class IP(object):
             self.error += f"Fehler in der CIDR.\n"
         return True if len(self.error)==0 else False
     
-    def getint(self):
+    def get_int(self):
         if self.version == self.Version.ipv4:
             add_cut = self.addr.split('.')
             number = 0
@@ -59,6 +59,20 @@ class IP(object):
         else:
             return -1
     
+    def get_mask(self):
+        number = int(self.cidr)
+        mask = ""
+        for i in range(3):
+            if number >= 8:
+                mask += "255"
+                number -= 8
+            else:
+                mask += str([0, 128, 192, 224, 240, 248, 252, 254, 255][number])
+                number = 0
+            mask += "."
+        mask += str([0, 128, 192, 224, 240, 248, 252, 254, 255][number])
+        return mask
+
     def comp_addr(self, number):
         add = ""
         for i in range(3):
@@ -75,10 +89,10 @@ class IP(object):
         return cidr
     
     def add_range(self, range):
-        number2 = IP(str(self.getint() + range))
+        number2 = IP(str(self.get_int() + range))
         return str(number2)
 
 if __name__== '__main__':
-    ip1 = IP('192.244.23.1/24')
-    print(ip1,ip1.getint())
-    print(ip1.add_range(32))
+    ip1 = IP('192.244.23.1/11')
+    print(ip1,ip1.get_int())
+    print(ip1.get_mask())
