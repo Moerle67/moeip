@@ -1,5 +1,3 @@
-
-
 class IP(object):
     class Version(object):
         ipv4 = 1
@@ -60,13 +58,13 @@ class IP(object):
             return -1
         
     def get_nid(self):
-        # calc the net-id
-        addr_lst = self.addr.split('.')
-        mask_lst = self.get_mask().split('.')
-        test = int(addr_lst[0]).to_bytes()
-        mask = int(mask_lst[0]).to_bytes()
-        test2 = test & mask
-        print(test2)
+
+        return '.'.join([str(int(addr) & int(mask)) for addr, mask in zip(self.addr.split('.'), self.get_mask().split('.'))])
+        
+    def get_bc(self):
+
+        return '.'.join([str(256+(int(addr) | ~int(mask))) for addr, mask in zip(self.addr.split('.'), self.get_mask().split('.'))])
+        
     
     def get_mask(self):
         # return mask as string
@@ -105,6 +103,6 @@ class IP(object):
         return str(number2)
 
 if __name__== '__main__':
-    ip1 = IP('255.244.23.1/11')
+    ip1 = IP('128.244.23.130/25')
     print(ip1,ip1.get_int())
-    print(ip1.get_nid())
+    print(ip1.get_nid(), ip1.get_bc())
